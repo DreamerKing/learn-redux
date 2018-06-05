@@ -1,31 +1,56 @@
 const   path = require('path'),
 		webpack = require('webpack'),
-		htmlWebpackPlugin = require('html-webpack-plugin');
+		HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
+	mode: "development",
 	module: {
-		rules:[
-		{
-			test: '/\.js$/',
-			exclude: /(node_modules|bower_components)/,
-			use: {
-				loader: 'babel-loader',
-				options: {
-					presets: ['env'],
-					plugins: [require('babel-plugin-transform-object-rest-spread')]
+		rules: 
+		[
+			{
+				test: /\.jsx?$/,
+				exclude: /(node_modules|bower_components)/,
+				use: {
+					loader: 'babel-loader',
+					// options: {
+					// 	plugins: ["react-hot-loader/babel"]
+					// }
 				}
+			},
+			{
+				test: /\.css$/,
+				use: ["style-loader", "css-loader"]
 			}
-		}
 		]
 	},
 	plugins: [
-		new webpack.optimize.UglifyJsPlugin(),
-		new htmlWebpackPlugin({
-			template: './src/index.html'
-		})
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			inject: true
+		}),
+		new webpack.NamedModulesPlugin(),
+		new webpack.HotModuleReplacementPlugin()
 	],
-	entry: './src/counter.js',
+	entry: [
+		'react-hot-loader/patch',
+		'./src/index.js'
+	],
 	output: {
 		path: path.resolve(__dirname,'dist'),
-		filename: "bundle.js"
+		filename: "[name]-[hash:8].js"
+	},
+	devtool: 'source-map',
+	devServer: {
+		contentBase: path.resolve(__dirname, "dist"),
+		port: 9091,
+		open: true,
+		historyApiFallback: true,
+		hot: true,
+		proxy: {
+			'/api': {
+				target: "localhost:300",
+				pathRewrite: { "^api": ""},
+				secure: false
+			}
+		}
 	}
 }
