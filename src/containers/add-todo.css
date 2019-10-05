@@ -1,0 +1,10 @@
+.todo-form {
+    text-align: center;
+    margin: 10px auto;
+}
+.todo-input {
+    width: 200px;
+}
+.add-btn {
+    margin: 0 8px;
+}

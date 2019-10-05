@@ -1,56 +1,50 @@
-const   path = require('path'),
-		webpack = require('webpack'),
-		HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 module.exports = {
-	mode: "development",
-	module: {
-		rules: 
-		[
-			{
-				test: /\.jsx?$/,
-				exclude: /(node_modules|bower_components)/,
-				use: {
-					loader: 'babel-loader',
-					// options: {
-					// 	plugins: ["react-hot-loader/babel"]
-					// }
-				}
-			},
-			{
-				test: /\.css$/,
-				use: ["style-loader", "css-loader"]
-			}
-		]
-	},
-	plugins: [
-		new HtmlWebpackPlugin({
-			template: './src/index.html',
-			inject: true
-		}),
-		new webpack.NamedModulesPlugin(),
-		new webpack.HotModuleReplacementPlugin()
-	],
-	entry: [
-		'react-hot-loader/patch',
-		'./src/index.js'
-	],
-	output: {
-		path: path.resolve(__dirname,'dist'),
-		filename: "[name]-[hash:8].js"
-	},
-	devtool: 'source-map',
-	devServer: {
-		contentBase: path.resolve(__dirname, "dist"),
-		port: 9091,
-		open: true,
-		historyApiFallback: true,
-		hot: true,
-		proxy: {
-			'/api': {
-				target: "localhost:300",
-				pathRewrite: { "^api": ""},
-				secure: false
-			}
-		}
-	}
+    mode: "development",
+    devtool: "eval-source-map",
+    context: path.resolve(__dirname),
+    entry: [path.join(__dirname, 'src/index.js')],
+    output: {
+        filename: "[name]-[hash]-[id].js",
+        chunkFilename: "[name]-[chunkhash]-[id].js",
+        path: path.join(__dirname, "dist"),
+        // publicPath: "/",
+        pathinfo: true
+    },
+    resolve: {
+        extensions: ['.js', '.css'],
+    },
+    module: {
+        rules: [{
+            test: /\.jsx?$/,
+            loader: "babel-loader"
+        },{
+            test: /\.css$/,
+            use: [
+               "style-loader",
+               "css-loader" 
+            ]
+        }]
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: "Learn redux",
+            filename: "index.html",
+            template: "src/index.html",
+            favicon: "./favicon.ico",
+            inject: true
+        })
+    ],
+    devServer: {
+        // contentBase: path.join(__dirname, "dist"),
+        compress: false,
+        port: 9000,
+        clientLogLevel: "error",
+       // host: "localhost",
+        open: true,
+        historyApiFallback: true,
+      //  mimeTypes: { }
+    }
 }
